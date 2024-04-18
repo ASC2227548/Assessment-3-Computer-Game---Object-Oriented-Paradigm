@@ -64,6 +64,9 @@ class Spaceship(pygame.sprite.Sprite):
         if pygame.mouse.get_pressed()[0] == 0:
             self.click = False
 
+        #when you jump and fall ship gets rotated for better look
+        #self.image = pygame.transform.rotate(self.image)
+
 
 ship = Spaceship(100, int(screen_height / 2))
 
