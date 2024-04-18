@@ -37,6 +37,19 @@ def rolling_BG():
     if bg1x < -screen_width:
         bg1x = screen_width
 
+class Spaceship(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('assets/ship.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = [x, y]
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+ship = Spaceship(100, int(screen_height / 2))
+
+
+
 
 #Game loop
 run = True
@@ -47,7 +60,7 @@ while run:
     #in the game loop the background stays moving
     rolling_BG()
 
-
+    ship.draw(screen)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
