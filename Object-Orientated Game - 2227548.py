@@ -18,21 +18,24 @@ bg = pygame.image.load('assets/bg.png')
 ground = pygame.image.load('assets/ground.jpg')
 
 #game variables
-ground_move = 0
-ground_speed = 4
+#ground_move = 0
+#ground_speed = 4
 
-bg0x = 545
+screen.blit(ground, (0,640))
+#if ship collides with ground then it dies and game restarts
+
+bg0x = 0
 bg1x = -screen_width
-def rolling_ground():
+def rolling_BG():
     global bg0x, bg1x, screen_width
-    screen.blit(ground, (bg0x,545))
-    screen.blit(ground, (bg1x,545))
-    bg0x += 1
-    bg1x += 1
-    if bg0x > screen_width:
-        bg0x = -screen_width
-    if bg1x > screen_width:
-        bg1x = -screen_width
+    screen.blit(bg, (bg0x,0))
+    screen.blit(bg, (bg1x,0))
+    bg0x -= 1
+    bg1x -= 1
+    if bg0x < -screen_width:
+        bg0x = screen_width
+    if bg1x < -screen_width:
+        bg1x = screen_width
 
 
 #Game loop
@@ -41,11 +44,8 @@ while run:
 
     clock.tick(fps)
 
-    #Draw the backgound
-    screen.blit(bg, (0,0))
-
-    #draw and move the ground
-    rolling_ground()
+    #in the game loop the background stays moving
+    rolling_BG()
 
 
 
