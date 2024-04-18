@@ -43,8 +43,27 @@ class Spaceship(pygame.sprite.Sprite):
         self.image = pygame.image.load('assets/ship.png')
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
+        self.vel = 0
+        self.click = False
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
+    def update(self):
+
+        #Falling
+        self.vel += 0.5
+        if self.vel > 8:
+            self.vel = 8
+        if self.rect.bottom < 640:
+            self.rect.y += int(self.vel)
+
+        #Jumping/Moving
+        if pygame.mouse.get_pressed()[0] == 1 and self.click == False:
+            self.click = True
+            self.vel = -10
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.click = False
+
 
 ship = Spaceship(100, int(screen_height / 2))
 
@@ -60,6 +79,7 @@ while run:
     #in the game loop the background stays moving
     rolling_BG()
 
+    ship.update()
     ship.draw(screen)
 
     for event in pygame.event.get():
