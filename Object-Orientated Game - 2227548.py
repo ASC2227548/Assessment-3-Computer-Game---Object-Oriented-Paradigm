@@ -105,10 +105,13 @@ class danger(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x -= 2
+        if self.rect.right < 0:
+            self.kill()
 
 
 danger_group = pygame.sprite.Group()
 ship = Spaceship(100, int(screen_height / 2))
+ship_group = pygame.sprite.GroupSingle(ship)
 
 
 
@@ -126,6 +129,7 @@ while run:
 
     ship.update()
     ship.draw(screen)
+
     if dead == False:
         danger_group.update()
         danger_group.draw(screen)
@@ -133,19 +137,22 @@ while run:
     if dead == False and flying == True:
         time_now = pygame.time.get_ticks()
         if time_now - last_danger > freq:
-            lower = danger(screen_width, int(screen_height / 2), -1)
-            top = danger(screen_width, int(screen_height / 2), 1)
+            danger_height = random.randint(-100, 100)
+            lower = danger(screen_width, int(screen_height / 2) + danger_height , -1)
+            top = danger(screen_width, int(screen_height / 2) + danger_height, 1)
             danger_group.add(lower)
             danger_group.add(top)
             last_danger = time_now
 
 
+    if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
+        dead = True
     #when ship leaves screen:
-    if ship.rect.bottom > 640:
+    if ship.rect.bottom >= 640:
         dead = True
         flying = False
         rolling = False
-    if ship.rect.top <0:
+    if ship.rect.top <= 0:
         dead = True
         flying = False
         rolling = False
