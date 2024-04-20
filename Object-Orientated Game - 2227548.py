@@ -40,7 +40,8 @@ def rolling_BG():
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('assets/ship.png')
+        self.original_image = pygame.image.load('assets/ship.png')
+        self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.vel = 0
@@ -49,7 +50,6 @@ class Spaceship(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def update(self):
-
         #Falling
         self.vel += 0.5
         if self.vel > 8:
@@ -57,15 +57,19 @@ class Spaceship(pygame.sprite.Sprite):
         if self.rect.bottom < 640:
             self.rect.y += int(self.vel)
 
-        #Jumping/Moving
+        #Jumping/Moving(and rotating to show falling and jumping)
         if pygame.mouse.get_pressed()[0] == 1 and self.click == False:
             self.click = True
             self.vel = -10
+            self.image = pygame.transform.rotate(self.original_image, 10)  # Rotate the image when jumping
         if pygame.mouse.get_pressed()[0] == 0:
             self.click = False
+            self.image = self.original_image
 
-        #when you jump and fall ship gets rotated for better look
-        #self.image = pygame.transform.rotate(self.image)
+        if self.vel > 0:
+            self.image = pygame.transform.rotate(self.original_image, -10)
+
+
 
 
 ship = Spaceship(100, int(screen_height / 2))
