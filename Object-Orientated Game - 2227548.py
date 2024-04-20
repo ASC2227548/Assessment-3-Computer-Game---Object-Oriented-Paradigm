@@ -1,4 +1,6 @@
 import pygame
+import random
+from random import randrange
 from pygame.locals import *
 
 pygame.init()
@@ -23,6 +25,9 @@ ground = pygame.image.load('assets/ground.jpg')
 flying = False
 dead = False
 rolling = True
+gap = 150
+freq = 1500
+last_danger = pygame.time.get_ticks() - freq
 
 screen.blit(ground, (0,640))
 #if ship collides with ground then it dies and game restarts
@@ -85,9 +90,26 @@ class Spaceship(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.original_image, -10)
 
 
+class danger(pygame.sprite.Sprite):
+    def __init__(self,x, y, pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('assets/danger1.png')
+        self.rect = self.image.get_rect()
+        if pos == 1:
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - int(gap) / 2]
+        if pos == -1:
+            self.rect.topleft = [x, y + int(gap) / 2]
 
 
+
+    def update(self):
+        self.rect.x -= 2
+
+
+danger_group = pygame.sprite.Group()
 ship = Spaceship(100, int(screen_height / 2))
+
 
 
 
@@ -104,8 +126,18 @@ while run:
 
     ship.update()
     ship.draw(screen)
+    if dead == False:
+        danger_group.update()
+        danger_group.draw(screen)
 
-
+    if dead == False and flying == True:
+        time_now = pygame.time.get_ticks()
+        if time_now - last_danger > freq:
+            lower = danger(screen_width, int(screen_height / 2), -1)
+            top = danger(screen_width, int(screen_height / 2), 1)
+            danger_group.add(lower)
+            danger_group.add(top)
+            last_danger = time_now
 
 
     #when ship leaves screen:
