@@ -20,6 +20,9 @@ ground = pygame.image.load('assets/ground.jpg')
 #game variables
 #ground_move = 0
 #ground_speed = 4
+flying = False
+dead = False
+rolling = True
 
 screen.blit(ground, (0,640))
 #if ship collides with ground then it dies and game restarts
@@ -27,15 +30,16 @@ screen.blit(ground, (0,640))
 bg0x = 0
 bg1x = -screen_width
 def rolling_BG():
-    global bg0x, bg1x, screen_width
-    screen.blit(bg, (bg0x,0))
-    screen.blit(bg, (bg1x,0))
-    bg0x -= 1
-    bg1x -= 1
-    if bg0x < -screen_width:
-        bg0x = screen_width
-    if bg1x < -screen_width:
-        bg1x = screen_width
+    if rolling == True:
+        global bg0x, bg1x, screen_width
+        screen.blit(bg, (bg0x,0))
+        screen.blit(bg, (bg1x,0))
+        bg0x -= 1
+        bg1x -= 1
+        if bg0x < -screen_width:
+            bg0x = screen_width
+        if bg1x < -screen_width:
+            bg1x = screen_width
 
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -46,16 +50,27 @@ class Spaceship(pygame.sprite.Sprite):
         self.rect.center = [x, y]
         self.vel = 0
         self.click = False
+        self.explode_counter = 0
+        self.dead = False
     def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        if dead == False:
+            screen.blit(self.image, self.rect)
+        else:
+            if self.explode_counter < 7:  # Adjusted for 7 images
+                explosion_image = pygame.image.load(f'assets/ex{self.explode_counter + 1}.png')
+                explosion_rect = explosion_image.get_rect(center=self.rect.center)
+                screen.blit(explosion_image, explosion_rect)
+                self.explode_counter += 1
+
 
     def update(self):
-        #Falling
-        self.vel += 0.5
-        if self.vel > 8:
-            self.vel = 8
-        if self.rect.bottom < 640:
-            self.rect.y += int(self.vel)
+        if flying == True:
+            #Falling
+            self.vel += 0.5
+            if self.vel > 8:
+                self.vel = 8
+            if self.rect.bottom < 640:
+                self.rect.y += int(self.vel)
 
         #Jumping/Moving(and rotating to show falling and jumping)
         if pygame.mouse.get_pressed()[0] == 1 and self.click == False:
@@ -86,12 +101,28 @@ while run:
     #in the game loop the background stays moving
     rolling_BG()
 
+
     ship.update()
     ship.draw(screen)
+
+
+
+
+    #when ship leaves screen:
+    if ship.rect.bottom > 640:
+        dead = True
+        flying = False
+        rolling = False
+    if ship.rect.top <0:
+        dead = True
+        flying = False
+        rolling = False
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.MOUSEBUTTONDOWN and flying == False and dead == False:
+            flying = True
 
     pygame.display.update()
 
