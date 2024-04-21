@@ -18,19 +18,26 @@ pygame.display.set_caption('Assessment 3: Jumpy Ship ')
 #Load images into game
 bg = pygame.image.load('assets/bg.png')
 ground = pygame.image.load('assets/ground.jpg')
+button = pygame.image.load('assets/BTN.png')
+
+#font
+font = pygame.font.SysFont('Bauhaus 93', 55)
+
+#colour
+white = (255, 255, 255)
 
 #game variables
-#ground_move = 0
-#ground_speed = 4
 flying = False
 dead = False
 rolling = True
-gap = 150
-freq = 1500
+gap = random.randint(150,220)
+freq = random.randint(2500,3500)
 last_danger = pygame.time.get_ticks() - freq
+score = 0
+past_dangers = False
 
 screen.blit(ground, (0,640))
-#if ship collides with ground then it dies and game restarts
+
 
 bg0x = 0
 bg1x = -screen_width
@@ -45,6 +52,12 @@ def rolling_BG():
             bg0x = screen_width
         if bg1x < -screen_width:
             bg1x = screen_width
+
+def text(text, font, colour, x, y):
+    img = font.render(text, True, colour)
+    screen.blit(img, (x, y))
+
+
 
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -95,6 +108,7 @@ class danger(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('assets/danger1.png')
         self.rect = self.image.get_rect()
+        #self.passed = False
         if pos == 1:
             self.image = pygame.transform.flip(self.image, False, True)
             self.rect.bottomleft = [x, y - int(gap) / 2]
@@ -107,6 +121,16 @@ class danger(pygame.sprite.Sprite):
         self.rect.x -= 2
         if self.rect.right < 0:
             self.kill()
+
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+    def draw(self):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
 
 
 danger_group = pygame.sprite.Group()
@@ -129,15 +153,28 @@ while run:
 
     ship.update()
     ship.draw(screen)
+    danger_group.draw(screen)
+
+    # check the score
+    if len(danger_group) > 0:
+        if ship_group.sprites()[0].rect.left > danger_group.sprites()[0].rect.left \
+                and past_dangers == False:
+                past_dangers = True
+        if past_dangers == True:
+            if ship_group.sprites()[0].rect.right < danger_group.sprites()[0].rect.right:
+                score += 1
+                past_dangers = False
+
+    text(str(score), font, white, int(screen_width) / 2, 10)
 
     if dead == False:
         danger_group.update()
-        danger_group.draw(screen)
+
 
     if dead == False and flying == True:
         time_now = pygame.time.get_ticks()
         if time_now - last_danger > freq:
-            danger_height = random.randint(-100, 100)
+            danger_height = random.randint(-100, 200)
             lower = danger(screen_width, int(screen_height / 2) + danger_height , -1)
             top = danger(screen_width, int(screen_height / 2) + danger_height, 1)
             danger_group.add(lower)
