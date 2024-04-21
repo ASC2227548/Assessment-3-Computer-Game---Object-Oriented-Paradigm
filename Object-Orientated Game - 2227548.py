@@ -12,10 +12,13 @@ fps = 60
 
 #load music and sounds
 pygame.mixer.music.load('assets/music.mp3')
-pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.set_volume(0.4)
 pygame.mixer.music.play(-1, 0.0)
 explosion_fx = pygame.mixer.Sound('assets/explosion.wav')
 explosion_fx.set_volume(0.5)
+point_fx = pygame.mixer.Sound('assets/point.wav')
+point_fx.set_volume(0.7)
+
 
 #Screen size when you play
 screen_width = 640
@@ -216,6 +219,7 @@ while run:
         if past_dangers == True:
             if ship_group.sprites()[0].rect.right < danger_group.sprites()[0].rect.right:
                 score += 1
+                point_fx.play()
                 past_dangers = False
 
     text(str(score), font, white, 310, 10)
@@ -227,7 +231,7 @@ while run:
     if dead == False and flying == True:
         time_now = pygame.time.get_ticks()
         if time_now - last_danger > freq:
-            danger_height = random.randint(-120, 205)
+            danger_height = random.randint(-120, 208)
             lower = danger(screen_width, int(screen_height / 2) + danger_height , -1)
             top = danger(screen_width, int(screen_height / 2) + danger_height, 1)
             danger_group.add(lower)
@@ -238,6 +242,7 @@ while run:
     #if player dies to either dangers, top or bottom of the screen it will play the explosion sound and will change dead to true
     if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
         dead = True
+        flying = False
         sound()
 
 
@@ -247,12 +252,14 @@ while run:
         dead = True
         flying = False
 
+
         if button.draw() == True:
             reset()
     if ship.rect.top <= 0:
         sound()
         dead = True
         flying = False
+
 
         if button.draw() == True:
             reset()
