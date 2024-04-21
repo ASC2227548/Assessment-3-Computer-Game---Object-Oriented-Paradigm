@@ -21,6 +21,7 @@ explosion_fx.set_volume(0.5)
 screen_width = 640
 screen_height = 640
 
+#set the games name when you play
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Assessment 3: Jumpy Ship ')
 
@@ -51,6 +52,8 @@ screen.blit(ground, (0,640))
 
 bg0x = 0
 bg1x = -screen_width
+
+#rolling background
 def rolling_BG():
     if rolling == True:
         global bg0x, bg1x, screen_width
@@ -63,10 +66,12 @@ def rolling_BG():
         if bg1x < -screen_width:
             bg1x = screen_width
 
+#define text
 def text(text, font, colour, x, y):
     img = font.render(text, True, colour)
     screen.blit(img, (x, y))
 
+#define what the reset should do to the variables
 def reset():
     global flying, dead, score, past_dangers, last_danger
     flying = False
@@ -80,7 +85,7 @@ def reset():
     danger_group.empty()
     ship.explode_counter = 0
 
-
+#the player class
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -92,6 +97,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.click = False
         self.explode_counter = 0
         self.dead = False
+    #if player dies it will itterate through 7 explosion images to create a animation of dying
     def draw(self, screen):
         if dead == False:
             screen.blit(self.image, self.rect)
@@ -105,7 +111,7 @@ class Spaceship(pygame.sprite.Sprite):
 
     def update(self):
         if flying == True:
-            #Falling
+            #Falling (making sure it doesnt go too fast downwards)
             self.vel += 0.5
             if self.vel > 8:
                 self.vel = 8
@@ -124,13 +130,13 @@ class Spaceship(pygame.sprite.Sprite):
         if self.vel > 0:
             self.image = pygame.transform.rotate(self.original_image, -10)
 
-
+#obstacles to avoid during the game
 class danger(pygame.sprite.Sprite):
     def __init__(self,x, y, pos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('assets/danger1.png')
         self.rect = self.image.get_rect()
-        #self.passed = False
+
         if pos == 1:
             self.image = pygame.transform.flip(self.image, False, True)
             self.rect.bottomleft = [x, y - int(gap) / 2]
@@ -144,7 +150,7 @@ class danger(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
 
-
+#the restart button after you die
 class Button():
     def __init__(self, x, y, image):
         self.image = image
@@ -202,7 +208,7 @@ while run:
     if dead == False:
         danger_group.update()
 
-
+    #when the player is not dead and is flying it will randomly create the height of the asteroids
     if dead == False and flying == True:
         time_now = pygame.time.get_ticks()
         if time_now - last_danger > freq:
@@ -213,12 +219,12 @@ while run:
             danger_group.add(top)
             last_danger = time_now
 
-        # if player died reset button appears
 
-
+    #if player dies to either dangers, top or bottom of the screen it will play the explosion sound and will change dead to true
     if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
-        dead = True
         explosion_fx.play()
+        dead = True
+
 
     #when ship leaves screen:
     if ship.rect.bottom >= 640:
