@@ -12,7 +12,7 @@ fps = 60
 
 #load music and sounds
 pygame.mixer.music.load('assets/music.mp3')
-pygame.mixer.music.set_volume(0.6)
+pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1, 0.0)
 explosion_fx = pygame.mixer.Sound('assets/explosion.wav')
 explosion_fx.set_volume(0.5)
@@ -172,6 +172,7 @@ ship_group = pygame.sprite.GroupSingle(ship)
 button = Button(245, 298, button_img)
 
 
+
 #Game loop
 run = True
 while run:
@@ -181,7 +182,6 @@ while run:
 
     #in the game loop the background stays moving
     rolling_BG()
-
 
     ship.update()
     ship.draw(screen)
@@ -222,21 +222,24 @@ while run:
 
     #when ship leaves screen:
     if ship.rect.bottom >= 640:
+        explosion_fx.play()
         dead = True
         flying = False
-        explosion_fx.play()
+
         if button.draw() == True:
             reset()
     if ship.rect.top <= 0:
+        explosion_fx.play()
         dead = True
         flying = False
-        explosion_fx.play()
+
         if button.draw() == True:
             reset()
 
     if dead == True:
         if button.draw() == True:
             reset()
+
 
 
 
