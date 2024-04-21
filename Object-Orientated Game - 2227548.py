@@ -184,7 +184,7 @@ ship = Spaceship(100, int(screen_height / 2))
 ship_group = pygame.sprite.GroupSingle(ship)
 
 
-button = Button(245, 298, button_img)
+button = Button(245, 500, button_img)
 
 
 
@@ -206,7 +206,7 @@ while run:
 
     #display game over text when dead and a start screen
     if dead:
-        text("Game Over", font, white, 200, 200)
+        text("Game Over", font, white, 200, 250)
     if dead == False and flying == False:
         text("JUMPY SHIP", font, white, 190, 200)
         text("Click Anywhere to Start", font_1, white, 220, 500)
