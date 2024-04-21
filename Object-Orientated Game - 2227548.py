@@ -44,8 +44,8 @@ white = (255, 255, 255)
 flying = False
 dead = False
 rolling = True
-gap = random.randint(150,220)
-freq = random.randint(2500,3500)
+gap = random.randint(115,190)
+freq = random.randint(2300,3200)
 last_danger = pygame.time.get_ticks() - freq
 score = 0
 past_dangers = False
@@ -116,6 +116,7 @@ class Spaceship(pygame.sprite.Sprite):
                 explosion_rect = explosion_image.get_rect(center=self.rect.center)
                 screen.blit(explosion_image, explosion_rect)
                 self.explode_counter += 1
+                explosion_fx.play()
 
 
     def update(self):
@@ -211,6 +212,7 @@ while run:
         text("JUMPY SHIP", font, white, 190, 200)
         text("Click Anywhere to Start", font_1, white, 220, 500)
 
+
     # check the score
     if len(danger_group) > 0:
         if ship_group.sprites()[0].rect.left > danger_group.sprites()[0].rect.left \
@@ -243,12 +245,12 @@ while run:
     if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
         dead = True
         flying = False
-        sound()
+        #sound()
 
 
     #when ship leaves screen:
     if ship.rect.bottom >= 640:
-        sound()
+        #sound()
         dead = True
         flying = False
 
@@ -256,7 +258,7 @@ while run:
         if button.draw() == True:
             reset()
     if ship.rect.top <= 0:
-        sound()
+        #sound()
         dead = True
         flying = False
 
