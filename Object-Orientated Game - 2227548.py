@@ -227,7 +227,7 @@ while run:
     if dead == False and flying == True:
         time_now = pygame.time.get_ticks()
         if time_now - last_danger > freq:
-            danger_height = random.randint(-100, 200)
+            danger_height = random.randint(-120, 205)
             lower = danger(screen_width, int(screen_height / 2) + danger_height , -1)
             top = danger(screen_width, int(screen_height / 2) + danger_height, 1)
             danger_group.add(lower)
@@ -262,8 +262,6 @@ while run:
             reset()
 
 
-
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -273,3 +271,4 @@ while run:
     pygame.display.update()
 
 pygame.quit()
+
