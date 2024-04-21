@@ -91,8 +91,7 @@ def reset():
     danger_group.empty()
     ship.explode_counter = 0
 
-def sound():
-    ex = explosion_fx.play()
+
 
 #the player class
 class Spaceship(pygame.sprite.Sprite):
@@ -245,12 +244,12 @@ while run:
     if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
         dead = True
         flying = False
-        #sound()
+
 
 
     #when ship leaves screen:
     if ship.rect.bottom >= 640:
-        #sound()
+
         dead = True
         flying = False
 
@@ -258,7 +257,7 @@ while run:
         if button.draw() == True:
             reset()
     if ship.rect.top <= 0:
-        #sound()
+
         dead = True
         flying = False
 
