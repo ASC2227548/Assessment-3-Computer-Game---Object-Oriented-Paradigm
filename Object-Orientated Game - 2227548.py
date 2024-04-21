@@ -1,12 +1,21 @@
 import pygame
 import random
+from pygame import mixer
 from random import randrange
 from pygame.locals import *
 
 pygame.init()
+mixer.init()
 
 clock = pygame.time.Clock()
 fps = 60
+
+#load music and sounds
+pygame.mixer.music.load('assets/music.mp3')
+pygame.mixer.music.set_volume(0.6)
+pygame.mixer.music.play(-1, 0.0)
+explosion_fx = pygame.mixer.Sound('assets/explosion.wav')
+explosion_fx.set_volume(0.5)
 
 #Screen size when you play
 screen_width = 640
@@ -18,7 +27,7 @@ pygame.display.set_caption('Assessment 3: Jumpy Ship ')
 #Load images into game
 bg = pygame.image.load('assets/bg.png')
 ground = pygame.image.load('assets/ground.jpg')
-button = pygame.image.load('assets/BTN.png')
+button_img = pygame.image.load('assets/BTN.png')
 
 #font
 font = pygame.font.SysFont('Bauhaus 93', 55)
@@ -35,6 +44,7 @@ freq = random.randint(2500,3500)
 last_danger = pygame.time.get_ticks() - freq
 score = 0
 past_dangers = False
+explosion_sound_played = False
 
 screen.blit(ground, (0,640))
 
@@ -57,6 +67,18 @@ def text(text, font, colour, x, y):
     img = font.render(text, True, colour)
     screen.blit(img, (x, y))
 
+def reset():
+    global flying, dead, score, past_dangers, last_danger
+    flying = False
+    dead = False
+    score = 0
+    past_dangers = False
+    last_danger = pygame.time.get_ticks() - freq
+    ship.rect.x = 100
+    ship.rect.y = int(screen_height / 2)
+    ship.vel = 0
+    danger_group.empty()
+    ship.explode_counter = 0
 
 
 class Spaceship(pygame.sprite.Sprite):
@@ -74,7 +96,7 @@ class Spaceship(pygame.sprite.Sprite):
         if dead == False:
             screen.blit(self.image, self.rect)
         else:
-            if self.explode_counter < 7:  # Adjusted for 7 images
+            if dead == True and self.explode_counter < 7:  # Adjusted for 7 images
                 explosion_image = pygame.image.load(f'assets/ex{self.explode_counter + 1}.png')
                 explosion_rect = explosion_image.get_rect(center=self.rect.center)
                 screen.blit(explosion_image, explosion_rect)
@@ -129,8 +151,17 @@ class Button():
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
     def draw(self):
+        action = False
+        #get the mouses position
+        pos = pygame.mouse.get_pos()
+        #is mouse over button?
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1:
+                action = True
+
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
+        return action
 
 
 danger_group = pygame.sprite.Group()
@@ -138,7 +169,7 @@ ship = Spaceship(100, int(screen_height / 2))
 ship_group = pygame.sprite.GroupSingle(ship)
 
 
-
+button = Button(245, 298, button_img)
 
 
 #Game loop
@@ -146,6 +177,7 @@ run = True
 while run:
 
     clock.tick(fps)
+
 
     #in the game loop the background stays moving
     rolling_BG()
@@ -165,7 +197,7 @@ while run:
                 score += 1
                 past_dangers = False
 
-    text(str(score), font, white, int(screen_width) / 2, 10)
+    text(str(score), font, white, 310, 10)
 
     if dead == False:
         danger_group.update()
@@ -181,18 +213,32 @@ while run:
             danger_group.add(top)
             last_danger = time_now
 
+        # if player died reset button appears
+
 
     if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
         dead = True
+        explosion_fx.play()
+
     #when ship leaves screen:
     if ship.rect.bottom >= 640:
         dead = True
         flying = False
-        rolling = False
+        explosion_fx.play()
+        if button.draw() == True:
+            reset()
     if ship.rect.top <= 0:
         dead = True
         flying = False
-        rolling = False
+        explosion_fx.play()
+        if button.draw() == True:
+            reset()
+
+    if dead == True:
+        if button.draw() == True:
+            reset()
+
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
