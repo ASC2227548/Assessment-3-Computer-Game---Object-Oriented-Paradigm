@@ -32,6 +32,7 @@ button_img = pygame.image.load('assets/BTN.png')
 
 #font
 font = pygame.font.SysFont('Bauhaus 93', 55)
+font_1 = pygame.font.SysFont('Bauhaus 93', 20)
 
 #colour
 white = (255, 255, 255)
@@ -46,6 +47,8 @@ last_danger = pygame.time.get_ticks() - freq
 score = 0
 past_dangers = False
 explosion_sound_played = False
+
+
 
 screen.blit(ground, (0,640))
 
@@ -84,6 +87,9 @@ def reset():
     ship.vel = 0
     danger_group.empty()
     ship.explode_counter = 0
+
+def sound():
+    ex = explosion_fx.play()
 
 #the player class
 class Spaceship(pygame.sprite.Sprite):
@@ -189,9 +195,18 @@ while run:
     #in the game loop the background stays moving
     rolling_BG()
 
+
+
     ship.update()
     ship.draw(screen)
     danger_group.draw(screen)
+
+    #display game over text when dead and a start screen
+    if dead:
+        text("Game Over", font, white, 200, 200)
+    if dead == False and flying == False:
+        text("JUMPY SHIP", font, white, 190, 200)
+        text("Click Anywhere to Start", font_1, white, 220, 500)
 
     # check the score
     if len(danger_group) > 0:
@@ -222,20 +237,20 @@ while run:
 
     #if player dies to either dangers, top or bottom of the screen it will play the explosion sound and will change dead to true
     if pygame.sprite.groupcollide(ship_group, danger_group, False, False):
-        explosion_fx.play()
         dead = True
+        sound()
 
 
     #when ship leaves screen:
     if ship.rect.bottom >= 640:
-        explosion_fx.play()
+        sound()
         dead = True
         flying = False
 
         if button.draw() == True:
             reset()
     if ship.rect.top <= 0:
-        explosion_fx.play()
+        sound()
         dead = True
         flying = False
 
